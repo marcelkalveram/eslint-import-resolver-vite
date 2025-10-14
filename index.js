@@ -9,14 +9,29 @@ const processAlias = (alias, source) => {
         const pathParts = path.normalize(source).split(path.sep);
         if (Array.isArray(alias)) {
             for (let i = 0; i < pathParts.length; i++) {
-                alias.forEach(({find, replacement}) => {
+                let subpathReplacement;
+
+                alias.forEach(({ find, replacement }) => {
+                    // module/subpath alias
+                    if (find === source) {
+                        subpathReplacement = replacement;
+                    }
+
                     if (pathParts[i] === find) {
                         pathParts[i] = replacement;
                     }
                 });
+
+                if (subpathReplacement) {
+                    return subpathReplacement;
+                }
             }
         }
         else if (typeof alias === "object") {
+            // module/subpath alias
+            if (alias[source]) {
+                return alias[source];
+            }
             for (let i = 0; i < pathParts.length; i++) {
                 if (alias.hasOwnProperty(pathParts[i])) {
                     pathParts[i] = alias[pathParts[i]];
