@@ -22,14 +22,13 @@ const processAlias = (alias, source) => {
                     }
                 });
 
-                if (subpathReplacement) {
+                if (subpathReplacement !== null) {
                     return subpathReplacement;
                 }
             }
-        }
-        else if (typeof alias === "object") {
+        } else if (typeof alias === "object") {
             // module/subpath alias
-            if (alias[source]) {
+            if (alias.hasOwnProperty(source)) {
                 return alias[source];
             }
             for (let i = 0; i < pathParts.length; i++) {
@@ -37,9 +36,10 @@ const processAlias = (alias, source) => {
                     pathParts[i] = alias[pathParts[i]];
                 }
             }
-        }
-        else {
-            throw new Error("The alias must be either an object, or an array of objects.");
+        } else {
+            throw new Error(
+                "The alias must be either an object, or an array of objects.",
+            );
         }
         return pathParts.join(path.sep);
     }
@@ -75,16 +75,14 @@ exports.resolve = (source, file, config) => {
     // try to resolve the source as is
     try {
         return resolveSync(source, resolveOptions, "as is");
-    }
-    catch {}
+    } catch {}
 
     // try to resolve the source with alias
     const parsedSource = processAlias(alias, source);
     if (parsedSource !== source) {
         try {
             return resolveSync(parsedSource, resolveOptions, "with alias");
-        }
-        catch {}
+        } catch {}
     }
 
     // try to resolve the source if it is an absolute path
@@ -93,8 +91,7 @@ exports.resolve = (source, file, config) => {
         const absoluteSource = path.join(path.resolve(root), parsedSource);
         try {
             return resolveSync(absoluteSource, resolveOptions, "absolute path");
-        }
-        catch {}
+        } catch {}
     }
 
     // try to resolve the source in public directory if all above failed
@@ -102,9 +99,12 @@ exports.resolve = (source, file, config) => {
         const publicDir = viteConfig.publicDir ?? "public";
         const publicSource = path.join(path.resolve(publicDir), parsedSource);
         try {
-            return resolveSync(publicSource, resolveOptions, "in public directory");
-        }
-        catch {}
+            return resolveSync(
+                publicSource,
+                resolveOptions,
+                "in public directory",
+            );
+        } catch {}
     }
 
     log("ERROR:\t", "Unable to resolve");
@@ -116,6 +116,6 @@ exports.createViteImportResolver = (config) => {
     return {
         interfaceVersion: 3,
         name: "eslint-import-resolver-vite",
-        resolve: (source, file) => exports.resolve(source, file, config)
+        resolve: (source, file) => exports.resolve(source, file, config),
     };
-}
+};
