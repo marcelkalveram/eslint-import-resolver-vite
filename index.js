@@ -22,7 +22,7 @@ const processAlias = (alias, source) => {
                     }
                 });
 
-                if (subpathReplacement !== null) {
+                if (subpathReplacement !== undefined) {
                     return subpathReplacement;
                 }
             }
