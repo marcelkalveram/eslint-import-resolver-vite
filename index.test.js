@@ -105,6 +105,14 @@ describe("Resolver Plugin Tests", () => {
             basedir: "/path/to",
             extensions: [".js"],
         });
+        expect(resolve.sync).toHaveBeenNthCalledWith(
+            2,
+            "/path/to/module/subpath.js",
+            {
+                basedir: "/path/to",
+                extensions: [".js"],
+            },
+        );
     });
 
     test("should resolve non-core subpath module (object pairs)", () => {
@@ -136,6 +144,14 @@ describe("Resolver Plugin Tests", () => {
             basedir: "/path/to",
             extensions: [".js"],
         });
+        expect(resolve.sync).toHaveBeenNthCalledWith(
+            2,
+            "/path/to/module/subpath.js",
+            {
+                basedir: "/path/to",
+                extensions: [".js"],
+            },
+        );
     });
 
     test("should throw error when viteConfig is not an object", () => {
