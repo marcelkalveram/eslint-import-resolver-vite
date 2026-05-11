@@ -8,23 +8,17 @@ const processAlias = (alias, source) => {
     if (alias) {
         const pathParts = path.normalize(source).split(path.sep);
         if (Array.isArray(alias)) {
+            // module/subpath alias
+            const exact = alias.find(({ find }) => find === source);
+            if (exact) {
+                return exact.replacement;
+            }
             for (let i = 0; i < pathParts.length; i++) {
-                let subpathReplacement;
-
                 alias.forEach(({ find, replacement }) => {
-                    // module/subpath alias
-                    if (find === source) {
-                        subpathReplacement = replacement;
-                    }
-
                     if (pathParts[i] === find) {
                         pathParts[i] = replacement;
                     }
                 });
-
-                if (subpathReplacement !== undefined) {
-                    return subpathReplacement;
-                }
             }
         } else if (typeof alias === "object") {
             // module/subpath alias
